@@ -3,10 +3,175 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Тест</title>
   </head>
   <body>
-    <p>Привет мир</p>
-    <p>Привет мир</p>
+    <header>
+      <nav>
+        <ul>
+          <li>Меню 1</li>
+          <li>Меню 2</li>
+        </ul>
+      </nav>
+    </header>
+    <h1>Тип never в Typescript</h1>
+    <!-- Начал изучать базу -->
+    <div>
+      <span>
+        <img src="https://purpleschool.ru/_next/image?url=https%3A%2F%2Favatars.githubusercontent.com%2Fu%2F2528600%3Fv%3D4&w=32&q=75" alt="Фото Антона Ларичева">
+        Антон Ларичев
+      </span>
+      <span>
+        <img src="https://purpleschool.ru/_next/static/media/calendar-gray.9397f2aa.svg" alt="Календарь">
+        30 сентября 2022
+      </span>
+    </div>
+    <hr>
+    <p>
+      Типизация <sup><a href="./index.html">1</a></sup> - это то, почему многие выбирают писать на <a href="https://purpleschool.ru/blog/typescript-never-type" target="_blank">TypeScript</a>, а не на
+      чистом JavaScript. Хотя на конференциях можно услышать доклады "Почему вам
+      не нужен TS", в больших проектах без него просто не обойтись. <br>А если
+      писать на нём регулярно, то уже даже в небольших проектах обычный JS будет
+      приносить только боль. Я это ощутил, при подготовке уроков по NodeJS для
+      следующего курса, где не используется TypeScript <sub>2</sub>.
+    </p>
+    <p>
+      Потому важно понимать все особенности типизации. Разберём тип never,
+      который многим, кто знакомится с TypeScript непонятен.
+    </p>
+    <h2>Не путать с void!</h2>
+    <p>
+      Тип <code>void</code> в возвращаемом типе функции, обозначает что функция
+      ничего не возвращает (или по иному говоря возвращает
+      <code>undefined</code>).
+    </p>
+    <code> const a = (): void => { return undefined; } </code>
+    <p>
+      В свою очередь переменной типа <code>never</code> можно присвоить только
+      тип <code>never</code> &amp; никакой другой. Кажется бесполезным? Рассмотрим 3
+      примера использования:
+    </p>
+    <h2>Исчерпывающие проверки типов</h2>
+    <p>Вот пример функции, которая возвращает тип <code>never</code>:</p>
+    <code>
+      export const error = (message: string): never => { throw new
+      Error(message); }
+    </code>
+    <p>
+      На самом деле любая функция, которая кидает ошибку, возвращает этот тип
+      среди других типов. Это можно использовать для исчерпывающих проверок
+      типов.
+    </p>
+    <code>
+      export const typeRun = (x: string | number): boolean => { if (typeof x ===
+      'string') { return true; } else if (typeof x === 'number') { return false;
+      } return error("!"); }
+    </code>
+    <p>
+      Если бы не использовали <code>never</code>, TS бы выдавал ошибку, так как
+      мы в теории могли бы попасть дальше проверки и вернуть
+      <code>undefined</code> вместо <code>boolean</code>.
+    </p>
+    <h2>Switch / case</h2>
+    <p>Рассмотрим следующий пример:</p>
+    <code>
+      export type Direction = 'up' | 'down'; export const run = (direction:
+      Direction) => { switch (direction) { case 'up': return 1; case 'down':
+      return -1; default: const a: never = direction; } }
+    </code>
+    <p>
+      Если у нас в <code>Direction</code> добавится новое направление, скажем
+      <code>right</code>, то TypeScript за счёт типа подскажет, что у нас
+      <code>switch</code> больше не валиден, так как при новом значении
+      <code>Direction</code> мы уже можем попасть в <code>default</code> и у нас
+      типу never будет присвоено значение другого типа, что недопустимо.
+    </p>
+    <h2>Conditional types</h2>
+    <p>
+      Благодаря <code>never</code> мы можем исключить не нужные типы. Например, сделаем тип,
+      который если у нас передано значение с <code>number</code> мы присваиваем <code>never</code>. Тем
+      самым мы оставляем только нужный тип в типе А:
+    </p>
+    <code>
+      type NonNumber<T> = T extends number ? never : T;
+
+      type A = NonNumber<string | number>; // A - всегда string
+    </code>
+
+    <table>
+      <caption>Структура расходов</caption>
+      <thead>
+        <tr>
+        <th rowspan="2">Статья</th>
+        <th colspan="2">Сумма</th>
+      </tr>
+      <tr>
+        <td>Руб</td>
+        <td>$</td>
+      </tr>
+
+      </thead>
+      <tbody>
+        <tr>
+          <td>Зарплата</td>
+          <td>100 000</td>
+          <td>2 000</td>
+        </tr>
+        <tr>
+          <td>Сервисы</td>
+          <td>50 000</td>
+          <td>1 000</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <td>Total</td>
+        <td>50 000</td>
+        <td>1 000</td>
+      </tfoot>
+    </table>
+
+    <table>
+      <caption>Таблица расходов и доходов</caption>
+      <thead>
+        <tr>
+          <td>Год</td>
+          <td colspan="2">2023</td>
+          <td colspan="2">2024</td>
+        </tr>
+        <tr>
+          <td>Полугодие</td>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>2</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Доходы</td>
+          <td>1500$</td>
+          <td>1800$</td>
+          <td>2000$</td>
+          <td>3000$</td>
+        </tr>
+        <tr>
+          <td>Расходы</td>
+          <td>-500$</td>
+          <td>-600$</td>
+          <td>-700$</td>
+          <td>-1000$</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <td>Итог</td>
+        <td>1000$</td>
+        <td>1200$</td>
+        <td>1300$</td>
+        <td>2000$</td>
+      </tfoot>
+    </table>
+
+    
+
   </body>
 </html>
